@@ -1,0 +1,103 @@
+cmd:
+python --version
+python -m pip install --upgrade pip
+mkdir practical
+cd practical
+python -m venv exam
+exam\Scripts\activate
+pip install django
+django -admin --version
+django-admin startproject prac
+cd prac
+python manage.py runserver
+django-admin startapp jango
+dir
+
+views.py:
+from django.shortcut import render
+from django.http import httpresponse
+def index(request):
+    return httpresponse("Hello world")
+
+
+urls.py:(app)
+from django.urls import path
+from . import views
+urlpatterns=[
+     path('',views.index,name='index'),
+]
+
+
+urls.py:(project)
+from django.urls import include,path
+path('jango/',include('jango.urls')),     ///hello world
+
+
+create html file ( app ):
+<!DOCTYPE html>
+<html>
+<body>
+<h1>My First Heading</h1>
+<p>My first paragraph.</p>
+</body>
+</html>
+
+modify view:
+from django.shortcuts import render
+from django.template import loader
+from django.http import HttpResponse
+def index(request):
+    template=loader.get_template('html.html')
+    return HttpResponse(template.render())
+
+settings.py:
+'jango.apps.JangoConfig'
+
+cmd:
+py manage.py migrate
+py manage.py runserver  ////to render html file
+
+
+models.py:
+from django.db import models
+class Jango(models.Model):
+    firstname= models.CharField(max_length=255)
+    lastname=models.CharField(max_length=255)
+
+cmd:
+py manage.py makemigrations jango
+python manage.py migrate
+py manage.py shell
+>>> from jango.models import Jango
+>>> Jango.objects.all()
+<QuerySet []>
+>>> jango=Jango(firstname='sri',lastname='nidhi')
+>>> jango=Jango(firstname='sri',lastname='nidhi')
+>>> jango=Jango(firstname='sri',lastname='nidhi')
+>>> jango.save()
+>>> Jango.objects.all()
+<QuerySet [<Jango: Jango object (1)>]>
+
+views.py:
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.template import loader
+from .models import Jango
+def index(request):
+    mem= Jango.objects.all().values()
+    output=""
+    for x in mem:
+        output += x["firstname"]+x["lastname"]
+    return HttpResponse(output)
+
+index.html:
+<h1>Members</h1>
+<table border="1">
+    % for x in mem %
+    <tr>
+        <td>{{ x.id}}</td>
+        <td>{{ x.firstname}}</td>
+        <td>{{ x.lastname}}</td>
+    </tr>
+    {% endfor %}
+</table>
